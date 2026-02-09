@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ISU Hub | Welcome</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --isu-green: #2d5a27; --isu-gold: #facc15; }
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .auth-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 8px solid var(--isu-gold); }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; background: var(--isu-green); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .toggle { margin-top: 15px; font-size: 13px; color: #666; cursor: pointer; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <h2 style="color: var(--isu-green);">ISU EVENT HUB</h2>
+        
+        <div id="login-box">
+            <input type="text" id="log-id" placeholder="Student ID">
+            <input type="password" id="log-pass" placeholder="Password">
+            <button class="btn" onclick="login()">LOGIN</button>
+            <p class="toggle" onclick="toggleAuth()">No account? Register here</p>
+        </div>
+
+        <div id="reg-box" class="hidden">
+            <input type="text" id="reg-name" placeholder="Full Name">
+            <input type="text" id="reg-id" placeholder="Student ID">
+            <select id="reg-dept">
+                <option value="CCSICT">CCSICT</option>
+                <option value="CTE">CTE</option>
+                <option value="CBA">CBA</option>
+            </select>
+            <input type="password" id="reg-pass" placeholder="Password">
+            <button class="btn" onclick="register()">REGISTER</button>
+            <p class="toggle" onclick="toggleAuth()">Back to Login</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleAuth() {
+            document.getElementById('login-box').classList.toggle('hidden');
+            document.getElementById('reg-box').classList.toggle('hidden');
+        }
+
+        function register() {
+            const user = {
+                name: document.getElementById('reg-name').value,
+                id: document.getElementById('reg-id').value,
+                dept: document.getElementById('reg-dept').value,
+                pass: document.getElementById('reg-pass').value,
+                role: 'user'
+            };
+            let users = JSON.parse(localStorage.getItem('isu_users')) || [];
+            users.push(user);
+            localStorage.setItem('isu_users', JSON.stringify(users));
+            alert("Registration Successful!");
+            toggleAuth();
+        }
+
+        function login() {
+            const id = document.getElementById('log-id').value;
+            const pass = document.getElementById('log-pass').value;
+
+            if(id === 'admin' && pass === 'admin123') {
+                localStorage.setItem('currentUser', JSON.stringify({name: 'Administrator', role: 'admin'}));
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('isu_users')) || [];
+            const user = users.find(u => u.id === id && u.pass === pass);
+            if(user) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                window.location.href = 'dashboard.html';
+            } else { alert("Invalid Credentials"); }
+        }
+    </script>
+</body>
+</html>

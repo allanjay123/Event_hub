@@ -1,82 +1,160 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>ISU Hub | Welcome</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Profile App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
-        :root { --isu-green: #2d5a27; --isu-gold: #facc15; }
-        body { font-family: 'Inter', sans-serif; background: #f0f2f5; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .auth-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 8px solid var(--isu-gold); }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; background: var(--isu-green); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .toggle { margin-top: 15px; font-size: 13px; color: #666; cursor: pointer; }
-        .hidden { display: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            width: 350px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            text-align: center;
+            color: white;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            background: linear-gradient(to right, #0072ff, #00c6ff);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        /* ===== FIXED IMAGE STYLE ===== */
+        .profile-image-container {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 15px auto;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid white;
+            background: white;
+        }
+
+        .profile-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;   /* FIX stretch */
+            object-position: center;
+            display: block;
+        }
+
+        .profile h3 {
+            margin-bottom: 10px;
+        }
+
+        .profile p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+
     </style>
 </head>
 <body>
-    <div class="auth-card">
-        <h2 style="color: var(--isu-green);">ISU EVENT HUB</h2>
-        
-        <div id="login-box">
-            <input type="text" id="log-id" placeholder="Student ID">
-            <input type="password" id="log-pass" placeholder="Password">
-            <button class="btn" onclick="login()">LOGIN</button>
-            <p class="toggle" onclick="toggleAuth()">No account? Register here</p>
-        </div>
 
-        <div id="reg-box" class="hidden">
-            <input type="text" id="reg-name" placeholder="Full Name">
-            <input type="text" id="reg-id" placeholder="Student ID">
-            <select id="reg-dept">
-                <option value="CCSICT">CCSICT</option>
-                <option value="CTE">CTE</option>
-                <option value="CBA">CBA</option>
-            </select>
-            <input type="password" id="reg-pass" placeholder="Password">
-            <button class="btn" onclick="register()">REGISTER</button>
-            <p class="toggle" onclick="toggleAuth()">Back to Login</p>
-        </div>
+<!-- INPUT PAGE -->
+<div class="container" id="inputPage">
+    <h2>Enter Profile</h2>
+
+    <input type="text" id="name" placeholder="Enter Name">
+    <input type="text" id="status" placeholder="Enter Status (Single)">
+    <input type="number" id="age" placeholder="Enter Age">
+    <input type="text" id="section" placeholder="Enter Section (BSIT 2A)">
+    <input type="file" id="image" accept="image/*">
+
+    <button onclick="showProfile()">Submit Profile</button>
+</div>
+
+<!-- OUTPUT PAGE -->
+<div class="container profile" id="outputPage" style="display:none;">
+    <h2>Profile</h2>
+
+    <div class="profile-image-container">
+        <img id="profileImage" 
+        src="https://cdn-icons-png.flaticon.com/512/847/847969.png">
     </div>
 
-    <script>
-        function toggleAuth() {
-            document.getElementById('login-box').classList.toggle('hidden');
-            document.getElementById('reg-box').classList.toggle('hidden');
-        }
+    <h3 id="profileName"></h3>
+    <p id="profileStatus"></p>
+    <p id="profileAge"></p>
+    <p id="profileSection"></p>
 
-        function register() {
-            const user = {
-                name: document.getElementById('reg-name').value,
-                id: document.getElementById('reg-id').value,
-                dept: document.getElementById('reg-dept').value,
-                pass: document.getElementById('reg-pass').value,
-                role: 'user'
-            };
-            let users = JSON.parse(localStorage.getItem('isu_users')) || [];
-            users.push(user);
-            localStorage.setItem('isu_users', JSON.stringify(users));
-            alert("Registration Successful!");
-            toggleAuth();
-        }
+    <button onclick="goBack()">Back</button>
+</div>
 
-        function login() {
-            const id = document.getElementById('log-id').value;
-            const pass = document.getElementById('log-pass').value;
+<script>
+function showProfile() {
 
-            if(id === 'admin' && pass === 'admin123') {
-                localStorage.setItem('currentUser', JSON.stringify({name: 'Administrator', role: 'admin'}));
-                window.location.href = 'dashboard.html';
-                return;
-            }
+    let name = document.getElementById("name").value;
+    let status = document.getElementById("status").value;
+    let age = document.getElementById("age").value;
+    let section = document.getElementById("section").value;
+    let imageInput = document.getElementById("image");
 
-            let users = JSON.parse(localStorage.getItem('isu_users')) || [];
-            const user = users.find(u => u.id === id && u.pass === pass);
-            if(user) {
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                window.location.href = 'dashboard.html';
-            } else { alert("Invalid Credentials"); }
-        }
-    </script>
+    if(name === "" || status === "" || age === "" || section === "") {
+        alert("Please complete all fields!");
+        return;
+    }
+
+    document.getElementById("profileName").innerText = name;
+    document.getElementById("profileStatus").innerText = status;
+    document.getElementById("profileAge").innerText = "Age: " + age;
+    document.getElementById("profileSection").innerText = section;
+
+    if(imageInput.files && imageInput.files[0]) {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById("profileImage").src = e.target.result;
+        };
+        reader.readAsDataURL(imageInput.files[0]);
+    }
+
+    document.getElementById("inputPage").style.display = "none";
+    document.getElementById("outputPage").style.display = "block";
+}
+
+function goBack() {
+    document.getElementById("outputPage").style.display = "none";
+    document.getElementById("inputPage").style.display = "block";
+}
+</script>
+
 </body>
-</html>
+    </html>
